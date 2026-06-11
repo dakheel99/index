@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>منصة احتساب راتب مصابي الحرب — CDCF</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+    background: #0B1426;
+    color: #E8EDF5;
+    min-height: 100vh;
+    direction: rtl;
+  }
+  /* HEADER */
+  .header {
+    background: linear-gradient(135deg, #0B1426 0%, #162040 50%, #1A2A50 100%);
+    border-bottom: 1px solid #2A3F6F;
+    padding: 28px 24px 24px;
+  }
+  .header-inner { max-width: 900px; margin: 0 auto; }
+  .header-top { display: flex; align-items: center; gap: 16px; margin-bottom: 10px; }
+  .header-icon {
+    width: 48px; height: 48px;
+    background: linear-gradient(135deg, #C9A84C, #E8C96A);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; flex-shrink: 0;
+  }
+  .header-eyebrow { font-size: 11px; color: #C9A84C; letter-spacing: 2px; margin-bottom: 4px; }
+  .header-title { font-size: 22px; font-weight: 700; color: #fff; }
+  .header-sub { font-size: 13px; color: #8A9EC0; line-height: 1.7; margin-top: 8px; }
+  .header-sub strong { color: #C9A84C; }
+
+  /* MAIN */
+  .main { max-width: 900px; margin: 0 auto; padding: 28px 20px 60px; }
+
+  /* GRID */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .grid-full { grid-column: 1 / -1; }
+  @media (max-width: 640px) { .grid-2 { grid-template-columns: 1fr; } }
+
+  /* CARD */
+  .card {
+    background: #0F1E3A;
+    border: 1px solid #2A3F6F;
+    border-radius: 12px;
+    padding: 18px 20px;
+  }
+  .card-header {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 14px;
+    border-bottom: 1px solid #1A2A50;
+    padding-bottom: 10px;
+  }
+  .card-title { font-size: 13px; font-weight: 700; color: #C9A84C; letter-spacing: 0.5px; }
+
+  /* LABEL */
+  .lbl { font-size: 12px; color: #6B9FE0; margin-bottom: 6px; font-weight: 600; margin-top: 12px; }
+  .lbl:first-child { margin-top: 0; }
+
+  /* SELECT */
+  select {
+    width: 100%; padding: 9px 12px;
+    border-radius: 8px; border: 1px solid #2A3F6F;
+    background: #0D1830; color: #E8EDF5;
+    font-size: 14px; cursor: pointer;
+    font-family: inherit;
+  }
+
+  /* RANGE */
+  input[type=range] { width: 100%; accent-color: #C9A84C; cursor: pointer; }
+  .range-labels { display: flex; justify-content: space-between; font-size: 12px; color: #6B7FA0; margin-top: 2px; }
+
+  /* INFO BOX */
+  .info-box {
+    background: #0D1830; border-radius: 8px; padding: 10px 14px;
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 10px;
+  }
+  .info-box-label { font-size: 12px; color: #8A9EC0; }
+  .info-box-val { font-size: 16px; font-weight: 700; }
+  .val-green { color: #4ADBA2; }
+  .val-gold { color: #C9A84C; }
+
+  /* DISABILITY BUTTONS */
+  .dis-grid { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
+  .dis-btn {
+    padding: 5px 10px; border-radius: 6px; border: 1px solid #2A3F6F;
+    background: #0D1830; color: #8A9EC0;
+    font-size: 13px; cursor: pointer; font-family: inherit;
+    transition: all 0.15s;
+  }
+  .dis-btn.active {
+    border-color: #C9A84C; background: rgba(201,168,76,0.13);
+    color: #C9A84C; font-weight: 700;
+  }
+  .dis-hint { font-size: 12px; color: #6B9FE0; margin-bottom: 10px; }
+  .dis-hint strong { color: #E8C96A; }
+
+  /* NUMBER INPUT */
+  input[type=number] {
+    width: 80px; padding: 8px 10px;
+    border-radius: 8px; border: 1px solid #2A3F6F;
+    background: #0D1830; color: #E8EDF5;
+    font-size: 16px; text-align: center; font-family: inherit;
+  }
+  .age-row { display: flex; align-items: center; gap: 12px; }
+  .age-hint { font-size: 13px; color: #6B9FE0; }
+  .age-hint strong { color: #E8C96A; }
+
+  /* DEPENDENTS */
+  .dep-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px,1fr)); gap: 14px; }
+  .toggle-btn {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 14px; border-radius: 8px;
+    border: 1px solid #2A3F6F; background: #0D1830; color: #6B7FA0;
+    cursor: pointer; font-size: 13px; width: 100%; font-family: inherit;
+    transition: all 0.15s;
+  }
+  .toggle-btn.on { border-color: #4ADBA2; background: #0A2E1F; color: #4ADBA2; }
+  .toggle-badge { margin-right: auto; font-size: 11px; color: #2DB88A; }
+  .num-btns { display: flex; gap: 6px; margin-top: 6px; }
+  .num-btn {
+    width: 36px; height: 36px; border-radius: 8px;
+    border: 1px solid #2A3F6F; background: #0D1830; color: #8A9EC0;
+    font-size: 14px; cursor: pointer; font-weight: 700; font-family: inherit;
+    transition: all 0.15s;
+  }
+  .num-btn.active { border-color: #C9A84C; background: rgba(201,168,76,0.13); color: #C9A84C; }
+  .num-hint { font-size: 11px; color: #6B9FE0; margin-top: 4px; }
+
+  /* CALCULATE BUTTON */
+  .calc-btn {
+    width: 100%; padding: 16px 0;
+    border-radius: 12px; border: none;
+    background: linear-gradient(135deg, #B8963A, #E8C96A, #B8963A);
+    color: #0B1426; font-size: 17px; font-weight: 800; cursor: pointer;
+    letter-spacing: 1px; margin-bottom: 28px;
+    box-shadow: 0 4px 20px rgba(201,168,76,0.27);
+    font-family: inherit;
+    transition: transform 0.1s, box-shadow 0.1s;
+  }
+  .calc-btn:hover { box-shadow: 0 6px 28px rgba(201,168,76,0.4); }
+  .calc-btn:active { transform: scale(0.98); }
+
+  /* RESULT */
+  #result { display: none; }
+  #result.show { display: block; animation: fadeUp 0.4s ease; }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+
+  /* RESULT TOP BOXES */
+  .res-top { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 18px; }
+  @media (max-width: 540px) { .res-top { grid-template-columns: 1fr; } }
+  .res-box {
+    border-radius: 12px; padding: 16px 14px; text-align: center;
+    background: #0F1E3A; border: 1px solid #2A3F6F;
+  }
+  .res-box.highlight { background: #0A2E1F; border-color: #1F6B4A; box-shadow: 0 0 20px rgba(74,219,162,0.13); }
+  .res-box.accent { background: #1A1400; border-color: #6B5000; box-shadow: 0 0 20px rgba(232,201,106,0.13); }
+  .res-box-label { font-size: 11px; color: #6B7FA0; margin-bottom: 8px; line-height: 1.4; }
+  .res-box-val { font-size: 26px; font-weight: 900; line-height: 1; }
+  .res-box-unit { font-size: 11px; color: #6B7FA0; margin-top: 4px; }
+  .res-box-note {
+    font-size: 11px; margin-top: 6px;
+    border-top: 1px solid #1A2A50; padding-top: 6px;
+  }
+
+  /* BREAKDOWN */
+  .breakdown { background: #0F1E3A; border: 1px solid #2A3F6F; border-radius: 12px; padding: 20px 24px; margin-bottom: 16px; }
+  .breakdown-title { font-size: 14px; color: #C9A84C; letter-spacing: 1px; margin-bottom: 16px; }
+  .calc-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 3px 0; font-size: 13px; color: #8A9EC0;
+  }
+  .calc-row.indent { padding-right: 16px; }
+  .calc-row.green { color: #2DB88A; }
+  .calc-row.total { font-size: 14px; font-weight: 800; color: #4ADBA2; }
+  .calc-row .mono { font-family: monospace; letter-spacing: 0.5px; }
+  .divider { border: none; border-top: 1px solid #2A3F6F; margin: 6px 0; }
+  .divider-dashed { border: none; border-top: 1px dashed #2A3F6F; margin: 6px 0; }
+  .clamp-warn {
+    background: #2A1800; border: 1px solid #8B6000;
+    border-radius: 6px; padding: 6px 12px;
+    font-size: 12px; color: #E8A84C; margin: 4px 0;
+  }
+  .clamp-ok {
+    background: #001A12; border: 1px solid #006B40;
+    border-radius: 6px; padding: 6px 12px;
+    font-size: 12px; color: #4ADBA2; margin: 4px 0;
+  }
+
+  /* PROJECTION TABLE */
+  .proj { background: #0F1E3A; border: 1px solid #2A3F6F; border-radius: 12px; padding: 18px 20px; margin-bottom: 16px; }
+  .proj-title { font-size: 14px; color: #C9A84C; margin-bottom: 14px; }
+  .proj table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .proj th { padding: 8px 12px; color: #6B9FE0; text-align: center; font-weight: 600; border-bottom: 1px solid #2A3F6F; }
+  .proj th:first-child { text-align: right; }
+  .proj td { padding: 8px 12px; text-align: center; border-bottom: 1px solid #1A2A50; }
+  .proj td:first-child { text-align: right; color: #E8EDF5; font-weight: 700; }
+  .proj-note { font-size: 11px; color: #4A5F80; margin-top: 10px; }
+
+  /* FORMULA BAR */
+  .formula-bar {
+    background: #060E1E; border: 1px solid #1A2A50;
+    border-radius: 10px; padding: 14px 18px;
+    font-size: 12px; color: #6B7FA0; line-height: 1.9;
+  }
+  .formula-bar strong { color: #8A9EC0; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-inner">
+    <div class="header-top">
+      <div class="header-icon">⚖️</div>
+      <div>
+        <div class="header-eyebrow">مقترح إصلاح نظام التقاعد العسكري</div>
+        <div class="header-title">منصة احتساب راتب مصابي الحرب</div>
+      </div>
+    </div>
+    <div class="header-sub">
+      معادلة الرعاية الشاملة للمصابين <strong>(CDCF)</strong> — مقارنة بالنظام الحالي للمادة (18) من نظام التقاعد العسكري
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- ROW 1: Rank + Injury -->
+  <div class="grid-2">
+
+    <!-- RANK CARD -->
+    <div class="card">
+      <div class="card-header">
+        <span>🎖️</span>
+        <span class="card-title">الرتبة العسكرية</span>
+      </div>
+
+      <div class="lbl">اختر الرتبة</div>
+      <select id="rankSel" onchange="onRankChange()">
+        <optgroup label="— الأفراد —">
+          <option value="jundi">جندي</option>
+          <option value="jundi_awal">جندي أول</option>
+          <option value="arif">عريف</option>
+          <option value="wakeel_raqeeb">وكيل رقيب</option>
+          <option value="raqeeb">رقيب</option>
+          <option value="raqeeb_awal">رقيب أول</option>
+          <option value="raees_ruqaba">رئيس رقباء</option>
+        </optgroup>
+        <optgroup label="— الضباط —">
+          <option value="mulazim">ملازم</option>
+          <option value="mulazim_awal">ملازم أول</option>
+          <option value="naqeeb" selected>نقيب</option>
+          <option value="raid">رائد</option>
+          <option value="muqaddam">مقدم</option>
+          <option value="aqeed">عقيد</option>
+          <option value="amid">عميد</option>
+          <option value="liwa">لواء</option>
+        </optgroup>
+      </select>
+
+      <div class="lbl" id="degreeLabel">الدرجة (8)</div>
+      <input type="range" id="degreeRange" min="1" max="15" value="8" oninput="onDegreeChange()">
+      <div class="range-labels"><span>1</span><span id="maxDegLbl">15</span></div>
+
+      <div class="info-box">
+        <span class="info-box-label">الراتب الحالي للرتبة</span>
+        <span class="info-box-val val-green" id="currentSalLbl">—</span>
+      </div>
+      <div class="info-box" id="refSalBox">
+        <span class="info-box-label" id="refSalLabel">الراتب المرجعي</span>
+        <span class="info-box-val val-gold" id="refSalLbl">—</span>
+      </div>
+    </div>
+
+    <!-- INJURY CARD -->
+    <div class="card">
+      <div class="card-header">
+        <span>🏥</span>
+        <span class="card-title">بيانات الإصابة والعمر</span>
+      </div>
+
+      <div class="lbl">نسبة العجز الطبي</div>
+      <div class="dis-grid" id="disGrid"></div>
+      <div class="dis-hint" id="disHint"></div>
+
+      <div class="lbl">العمر عند الإصابة</div>
+      <div class="age-row">
+        <input type="number" id="ageInput" min="18" max="65" value="35" oninput="onAgeChange()">
+        <span class="age-hint" id="ageHint"></span>
+      </div>
+    </div>
+
+  </div><!-- /grid-2 -->
+
+  <!-- ROW 2: Dependents -->
+  <div class="card" style="margin-bottom:16px;">
+    <div class="card-header">
+      <span>👨‍👩‍👧</span>
+      <span class="card-title">المعالون وبدل الأسرة</span>
+    </div>
+    <div class="dep-grid">
+      <!-- Spouse -->
+      <div>
+        <div class="lbl">الزوجة</div>
+        <button class="toggle-btn" id="spouseBtn" onclick="toggleSpouse()">
+          <span id="spouseIcon">⬜</span>
+          <span id="spouseText">لا يوجد</span>
+          <span class="toggle-badge" id="spouseBadge" style="display:none">+500 ر.س</span>
+        </button>
+      </div>
+      <!-- Children -->
+      <div>
+        <div class="lbl">عدد الأطفال (حتى 4)</div>
+        <div class="num-btns" id="childBtns"></div>
+        <div class="num-hint" id="childHint"></div>
+      </div>
+      <!-- Disabled Child -->
+      <div id="disabledChildWrap">
+        <div class="lbl">طفل ذو إعاقة</div>
+        <button class="toggle-btn" id="disChildBtn" onclick="toggleDisChild()">
+          <span id="disChildIcon">⬜</span>
+          <span id="disChildText">لا يوجد</span>
+          <span class="toggle-badge" id="disChildBadge" style="display:none">+500 ر.س</span>
+        </button>
+      </div>
+      <!-- Parents -->
+      <div>
+        <div class="lbl">والدان معالان</div>
+        <div class="num-btns" id="parentBtns"></div>
+        <div class="num-hint" id="parentHint"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CALCULATE -->
+  <button class="calc-btn" onclick="calculate()">⚖️ &nbsp; احتساب الراتب المستحق</button>
+
+  <!-- RESULT -->
+  <div id="result">
+
+    <!-- TOP 3 BOXES -->
+    <div class="res-top">
+      <div class="res-box">
+        <div class="res-box-label">النظام الحالي (المادة 18)</div>
+        <div class="res-box-val" style="color:#6B9FE0" id="r_current">—</div>
+        <div class="res-box-unit">ر.س / شهر</div>
+        <div class="res-box-note" style="color:#4A5F80" id="r_current_note"></div>
+      </div>
+      <div class="res-box highlight">
+        <div class="res-box-label">المقترح الجديد (CDCF)</div>
+        <div class="res-box-val" style="color:#4ADBA2" id="r_new">—</div>
+        <div class="res-box-unit">ر.س / شهر</div>
+        <div class="res-box-note" style="color:#2DB88A" id="r_new_note"></div>
+      </div>
+      <div class="res-box accent">
+        <div class="res-box-label">الفرق الشهري</div>
+        <div class="res-box-val" style="color:#E8C96A" id="r_diff">—</div>
+        <div class="res-box-unit">ر.س / شهر</div>
+        <div class="res-box-note" style="color:#B8963A" id="r_diff_note"></div>
+      </div>
+    </div>
+
+    <!-- BREAKDOWN -->
+    <div class="breakdown">
+      <div class="breakdown-title">تفاصيل الاحتساب — المقترح الجديد</div>
+      <div id="breakdown_rows"></div>
+    </div>
+
+    <!-- PROJECTION -->
+    <div class="proj">
+      <div class="proj-title">التوقعات المستقبلية (بافتراض تضخم 3% سنوياً)</div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr>
+              <th style="text-align:right">السنة</th>
+              <th>النظام الحالي (ثابت)</th>
+              <th>المقترح الجديد (مع التضخم)</th>
+              <th>الفرق التراكمي</th>
+            </tr>
+          </thead>
+          <tbody id="projBody"></tbody>
+        </table>
+      </div>
+      <div class="proj-note">* الفرق التراكمي = (المقترح − الحالي) × 12 شهر × عدد السنوات، مع تعديل التضخم على المقترح فقط</div>
+    </div>
+
+    <!-- FORMULA BAR -->
+    <div class="formula-bar">
+      <strong>المعادلة: </strong>
+      المعاش الإجمالي = [R_ref × F_d × F_a × C_b] + A_d &nbsp;|&nbsp;
+      الحد الأدنى: R_ref × 0.70 &nbsp;|&nbsp;
+      الحد الأقصى: R_ref × 1.20 + A_d &nbsp;|&nbsp;
+      مكافأة الإصابة الحربية C_b = 1.15 ثابتة
+    </div>
+
+  </div><!-- /result -->
+
+</div><!-- /main -->
+
+<script>
+// ══════════════════════════════════════
+// DATA
+// ══════════════════════════════════════
+const RANKS = {
+  jundi:         { label:"جندي",          sal:[3220,3350,3480,3610,3740,3870,4000,4130,4260,4390,4520,4650,4780,4910,5040] },
+  jundi_awal:    { label:"جندي أول",      sal:[3395,3540,3685,3830,3975,4120,4265,4410,4555,4700,4845,4990,5135,5280,5425] },
+  arif:          { label:"عريف",          sal:[3765,3940,4115,4290,4465,4640,4815,4990,5165,5340,5515,5690,5865,6040,6215] },
+  wakeel_raqeeb: { label:"وكيل رقيب",    sal:[4455,4665,4875,5080,5295,5505,5715,5925,6135,6345,6555,6765,6975,7185,7395] },
+  raqeeb:        { label:"رقيب",          sal:[5260,5510,5760,6010,6260,6510,6760,7010,7260,7510,7760,8010,8260,8510,8760] },
+  raqeeb_awal:   { label:"رقيب أول",     sal:[6180,6480,6780,7080,7380,7680,7980,8280,8580,8880,9180,9480,9780,10080,10380] },
+  raees_ruqaba:  { label:"رئيس رقباء",   sal:[7215,7575,7935,8295,8655,9015,9375,9735,10095,10455,10815,11175,11535,11895,12255] },
+  mulazim:       { label:"ملازم",         sal:[7590,7970,8350,8730,9110,9490,9870,10250,10630,11010,11390,11770,12150,12530,12910] },
+  mulazim_awal:  { label:"ملازم أول",    sal:[8835,9275,9715,10155,10595,11035,11475,11915,12355,12795,13235,13675,14115,14555,14995] },
+  naqeeb:        { label:"نقيب",          sal:[10600,11095,11590,12085,12580,13075,13570,13835,14100,14365,14630,14895,15160,15425,15690] },
+  raid:          { label:"رائد",          sal:[13515,13780,14045,14310,14575,14840,15105,15370,15635,15990,16165,16430,16695,19960,17225] },
+  muqaddam:      { label:"مقدم",          sal:[14645,15115,15585,16055,16525,16995,17465,17935,18405,18875,19345,20285,20755,null,null] },
+  aqeed:         { label:"عقيد",          sal:[16520,17110,17700,18290,18880,19470,20060,20650,21240,21830,22420,23010,23600,null,null] },
+  amid:          { label:"عميد",          sal:[18805,19455,20105,20755,21405,22055,22705,23355,24005,24655,25305,25955,null,null,null] },
+  liwa:          { label:"لواء",          sal:[21390,22120,23580,23850,24310,25040,25770,65000,27230,27960,28690,null,null,null,null] },
+};
+
+const RANK_ORDER = ["jundi","jundi_awal","arif","wakeel_raqeeb","raqeeb","raqeeb_awal","raees_ruqaba",
+                    "mulazim","mulazim_awal","naqeeb","raid","muqaddam","aqeed","amid","liwa"];
+
+const DIS_FACTORS = [
+  {pct:10,  factor:0.60, desc:"عجز خفيف"},
+  {pct:20,  factor:0.60, desc:"عجز خفيف"},
+  {pct:30,  factor:0.70, desc:"عجز متوسط منخفض"},
+  {pct:40,  factor:0.75, desc:"عجز متوسط"},
+  {pct:50,  factor:0.80, desc:"عجز متوسط مرتفع"},
+  {pct:60,  factor:0.85, desc:"عجز جزئي كبير"},
+  {pct:70,  factor:0.90, desc:"عجز جزئي شديد"},
+  {pct:80,  factor:0.95, desc:"عجز جزئي بالغ"},
+  {pct:90,  factor:1.00, desc:"عجز شبه كلي"},
+  {pct:100, factor:1.10, desc:"عجز كلي كامل"},
+];
+
+const AGE_FACTORS = [
+  {maxAge:25,  factor:1.20, label:"25 فأقل"},
+  {maxAge:30,  factor:1.15, label:"26–30"},
+  {maxAge:35,  factor:1.10, label:"31–35"},
+  {maxAge:40,  factor:1.05, label:"36–40"},
+  {maxAge:45,  factor:1.00, label:"41–45"},
+  {maxAge:50,  factor:0.95, label:"46–50"},
+  {maxAge:999, factor:0.90, label:"فوق 50"},
+];
+
+// ══════════════════════════════════════
+// STATE
+// ══════════════════════════════════════
+let state = {
+  rankId: "naqeeb",
+  degree: 8,
+  disPct: 50,
+  age: 35,
+  spouse: false,
+  children: 0,
+  disabledChild: false,
+  parents: 0,
+};
+
+// ══════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════
+function fmt(n) {
+  return Math.round(n).toLocaleString("ar-SA");
+}
+
+function getMaxSalary(rankId) {
+  if (!RANKS[rankId]) return 0;
+  const valid = RANKS[rankId].sal.filter(s => s !== null && s !== undefined);
+  return Math.max(...valid);
+}
+
+function getNextRank(rankId) {
+  const idx = RANK_ORDER.indexOf(rankId);
+  if (idx === -1 || idx === RANK_ORDER.length - 1) return null;
+  return RANK_ORDER[idx + 1];
+}
+
+function getDisEntry(pct) {
+  return DIS_FACTORS.find(d => d.pct === pct) || DIS_FACTORS[4];
+}
+
+function getAgeEntry(age) {
+  return AGE_FACTORS.find(a => age <= a.maxAge) || AGE_FACTORS[AGE_FACTORS.length - 1];
+}
+
+// ══════════════════════════════════════
+// INIT
+// ══════════════════════════════════════
+function init() {
+  // Disability buttons
+  const dg = document.getElementById("disGrid");
+  [10,20,30,40,50,60,70,80,90,100].forEach(pct => {
+    const b = document.createElement("button");
+    b.className = "dis-btn" + (pct === state.disPct ? " active" : "");
+    b.textContent = pct + "%";
+    b.dataset.pct = pct;
+    b.onclick = () => { state.disPct = pct; updateDisButtons(); updateDisHint(); };
+    dg.appendChild(b);
+  });
+  // Children buttons
+  const cb = document.getElementById("childBtns");
+  [0,1,2,3,4].forEach(n => {
+    const b = document.createElement("button");
+    b.className = "num-btn" + (n === state.children ? " active" : "");
+    b.textContent = n;
+    b.dataset.n = n;
+    b.onclick = () => { state.children = n; updateChildButtons(); };
+    cb.appendChild(b);
+  });
+  // Parent buttons
+  const pb = document.getElementById("parentBtns");
+  [0,1,2].forEach(n => {
+    const b = document.createElement("button");
+    b.className = "num-btn" + (n === state.parents ? " active" : "");
+    b.textContent = n;
+    b.dataset.n = n;
+    b.onclick = () => { state.parents = n; updateParentButtons(); };
+    pb.appendChild(b);
+  });
+
+  updateRankDisplay();
+  updateDisHint();
+  updateAgeHint();
+}
+
+function updateRankDisplay() {
+  const rank = RANKS[state.rankId];
+  const validSals = rank.sal.filter(s => s !== null && s !== undefined);
+  const maxDeg = validSals.length;
+  const deg = Math.min(state.degree, maxDeg);
+  state.degree = deg;
+
+  const degRange = document.getElementById("degreeRange");
+  degRange.max = maxDeg;
+  degRange.value = deg;
+  document.getElementById("maxDegLbl").textContent = maxDeg;
+  document.getElementById("degreeLabel").textContent = `الدرجة (${deg})`;
+
+  const curSal = rank.sal[deg - 1] || 0;
+  document.getElementById("currentSalLbl").textContent = fmt(curSal) + " ر.س";
+
+  const nextId = getNextRank(state.rankId);
+  const refSal = nextId ? getMaxSalary(nextId) : getMaxSalary(state.rankId);
+  const nextLabel = nextId ? RANKS[nextId].label : rank.label;
+  document.getElementById("refSalLabel").textContent = `الراتب المرجعي (أعلى درجة — ${nextLabel})`;
+  document.getElementById("refSalLbl").textContent = fmt(refSal) + " ر.س";
+}
+
+function updateDisButtons() {
+  document.querySelectorAll(".dis-btn").forEach(b => {
+    b.classList.toggle("active", parseInt(b.dataset.pct) === state.disPct);
+  });
+}
+
+function updateDisHint() {
+  const e = getDisEntry(state.disPct);
+  document.getElementById("disHint").innerHTML = `${e.desc} — معامل العجز: <strong>${e.factor}</strong>`;
+}
+
+function updateAgeHint() {
+  const e = getAgeEntry(state.age);
+  document.getElementById("ageHint").innerHTML = `معامل العمر: <strong>${e.factor}</strong> <span style="color:#6B7FA0;margin-right:6px">(${e.label} سنة)</span>`;
+}
+
+function updateChildButtons() {
+  document.querySelectorAll("#childBtns .num-btn").forEach(b => {
+    b.classList.toggle("active", parseInt(b.dataset.n) === state.children);
+  });
+  const hint = document.getElementById("childHint");
+  hint.textContent = state.children > 0 ? `+${state.children * 300} ر.س/شهر` : "";
+  document.getElementById("disabledChildWrap").style.display = state.children > 0 ? "" : "none";
+}
+
+function updateParentButtons() {
+  document.querySelectorAll("#parentBtns .num-btn").forEach(b => {
+    b.classList.toggle("active", parseInt(b.dataset.n) === state.parents);
+  });
+  const hint = document.getElementById("parentHint");
+  hint.textContent = state.parents > 0 ? `+${state.parents * 400} ر.س/شهر` : "";
+}
+
+// ══════════════════════════════════════
+// EVENT HANDLERS
+// ══════════════════════════════════════
+function onRankChange() {
+  state.rankId = document.getElementById("rankSel").value;
+  updateRankDisplay();
+}
+
+function onDegreeChange() {
+  state.degree = parseInt(document.getElementById("degreeRange").value);
+  document.getElementById("degreeLabel").textContent = `الدرجة (${state.degree})`;
+  updateRankDisplay();
+}
+
+function onAgeChange() {
+  state.age = parseInt(document.getElementById("ageInput").value) || 30;
+  updateAgeHint();
+}
+
+function toggleSpouse() {
+  state.spouse = !state.spouse;
+  const btn = document.getElementById("spouseBtn");
+  btn.classList.toggle("on", state.spouse);
+  document.getElementById("spouseIcon").textContent = state.spouse ? "✅" : "⬜";
+  document.getElementById("spouseText").textContent = state.spouse ? "زوجة" : "لا يوجد";
+  document.getElementById("spouseBadge").style.display = state.spouse ? "" : "none";
+}
+
+function toggleDisChild() {
+  state.disabledChild = !state.disabledChild;
+  const btn = document.getElementById("disChildBtn");
+  btn.classList.toggle("on", state.disabledChild);
+  document.getElementById("disChildIcon").textContent = state.disabledChild ? "✅" : "⬜";
+  document.getElementById("disChildText").textContent = state.disabledChild ? "طفل ذو إعاقة" : "لا يوجد";
+  document.getElementById("disChildBadge").style.display = state.disabledChild ? "" : "none";
+}
+
+// ══════════════════════════════════════
+// CALCULATE
+// ══════════════════════════════════════
+function calculate() {
+  const rank = RANKS[state.rankId];
+  const nextId = getNextRank(state.rankId);
+  const Rref = nextId ? getMaxSalary(nextId) : getMaxSalary(state.rankId);
+  const nextLabel = nextId ? RANKS[nextId].label : rank.label;
+
+  const disEntry = getDisEntry(state.disPct);
+  const ageEntry = getAgeEntry(state.age);
+  const Fd = disEntry.factor;
+  const Fa = ageEntry.factor;
+  const Cb = 1.15;
+
+  const base = Rref * Fd * Fa * Cb;
+  const minAllowed = Rref * 0.70;
+  const maxAllowed = Rref * 1.20;
+
+  let baseClamped = base;
+  let clamped = null;
+  if (base < minAllowed) { baseClamped = minAllowed; clamped = "min"; }
+  else if (base > maxAllowed) { baseClamped = maxAllowed; clamped = "max"; }
+
+  const Ad_spouse   = state.spouse ? 500 : 0;
+  const Ad_children = Math.min(state.children, 4) * 300;
+  const Ad_disChild = (state.disabledChild && state.children > 0) ? 500 : 0;
+  const Ad_parents  = state.parents * 400;
+  const Ad = Ad_spouse + Ad_children + Ad_disChild + Ad_parents;
+
+  const totalNew = baseClamped + Ad;
+  const isPartial = state.disPct < 100;
+  const currentSystem = isPartial ? Rref * 0.80 : Rref * 1.00;
+  const diff = totalNew - currentSystem;
+  const diffPct = ((diff / currentSystem) * 100).toFixed(1);
+
+  // Update top boxes
+  document.getElementById("r_current").textContent = fmt(currentSystem) + " ر.س";
+  document.getElementById("r_current_note").textContent = isPartial ? "80% من الراتب المرجعي" : "100% من الراتب المرجعي";
+  document.getElementById("r_new").textContent = fmt(totalNew) + " ر.س";
+  document.getElementById("r_new_note").textContent = `يشمل بدل المعالين: ${fmt(Ad)} ر.س`;
+  document.getElementById("r_diff").textContent = `+${fmt(diff)} ر.س`;
+  document.getElementById("r_diff_note").textContent = `زيادة ${diffPct}%`;
+
+  // Breakdown
+  const br = document.getElementById("breakdown_rows");
+  br.innerHTML = "";
+
+  function row(label, val, cls) {
+    return `<div class="calc-row ${cls||""}"><span>${label}</span><span class="mono">${val}</span></div>`;
+  }
+
+  br.innerHTML += row(`الراتب المرجعي R_ref (أعلى درجة — ${nextLabel})`, fmt(Rref) + " ر.س");
+  br.innerHTML += row(`× معامل العجز F_d = ${Fd}`, fmt(Rref * Fd) + " ر.س", "indent");
+  br.innerHTML += row(`× معامل العمر F_a = ${Fa}`, fmt(Rref * Fd * Fa) + " ر.س", "indent");
+  br.innerHTML += row(`× مكافأة الإصابة الحربية C_b = 1.15`, fmt(base) + " ر.س", "indent");
+
+  if (clamped === "max") {
+    br.innerHTML += `<div class="clamp-warn">⚠️ طُبِّق الحد الأقصى (120% من R_ref = ${fmt(maxAllowed)} ر.س) — النتيجة المحسوبة أعلى من السقف</div>`;
+  }
+  if (clamped === "min") {
+    br.innerHTML += `<div class="clamp-ok">✅ طُبِّق الحد الأدنى (70% من R_ref = ${fmt(minAllowed)} ر.س)</div>`;
+  }
+
+  br.innerHTML += `<hr class="divider-dashed">`;
+  if (Ad_spouse > 0)   br.innerHTML += row("+ بدل الزوجة", fmt(Ad_spouse) + " ر.س", "green");
+  if (Ad_children > 0) br.innerHTML += row(`+ بدل الأطفال (${Math.min(state.children,4)} × 300)`, fmt(Ad_children) + " ر.س", "green");
+  if (Ad_disChild > 0) br.innerHTML += row("+ بدل طفل ذو إعاقة", fmt(Ad_disChild) + " ر.س", "green");
+  if (Ad_parents > 0)  br.innerHTML += row(`+ بدل الوالدين (${state.parents} × 400)`, fmt(Ad_parents) + " ر.س", "green");
+  br.innerHTML += `<hr class="divider">`;
+  br.innerHTML += row("المعاش الشهري الإجمالي (CDCF)", fmt(totalNew) + " ر.س", "total");
+
+  // Projection
+  const pb = document.getElementById("projBody");
+  pb.innerHTML = "";
+  [5,10,20,30].forEach(y => {
+    const projected = totalNew * Math.pow(1.03, y);
+    const cumDiff = (projected - currentSystem) * 12 * y;
+    pb.innerHTML += `
+      <tr>
+        <td>بعد ${y} سنوات</td>
+        <td style="color:#6B9FE0">${fmt(currentSystem)} ر.س</td>
+        <td style="color:#4ADBA2;font-weight:700">${fmt(projected)} ر.س</td>
+        <td style="color:#E8C96A">+${fmt(cumDiff)} ر.س</td>
+      </tr>`;
+  });
+
+  // Show result
+  const res = document.getElementById("result");
+  res.classList.remove("show");
+  res.style.display = "block";
+  requestAnimationFrame(() => res.classList.add("show"));
+  res.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+// ══════════════════════════════════════
+// START
+// ══════════════════════════════════════
+init();
+updateChildButtons();
+updateParentButtons();
+</script>
+</body>
+</html>
